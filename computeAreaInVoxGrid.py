@@ -206,18 +206,19 @@ class Grid:
         print(f"Update après le bisect")
     
     def compute_areas_in_grid(self):
+        bm = bmesh.new()
+        bm.from_mesh(self.obj.data)
+        bm.transform(self.obj.matrix_world)
         for x in range(self.resolution[0]):
             for y in range(self.resolution[1]): 
                 for z in range(self.resolution[2]):
                     # Calculer l'aire de surface dans ce voxel
-                    voxel_surface_area = self.calculate_surface_area_in_voxel(x,y,z)
+                    voxel_surface_area = self.calculate_surface_area_in_voxel(bm,x,y,z)
                     self.voxels[x, y, z] = voxel_surface_area
+        bm.free()
 
-    def calculate_surface_area_in_voxel(self, x, y, z):
-        bm = bmesh.new()
-        bm.from_mesh(self.obj.data)
-        bm.transform(self.obj.matrix_world)
-        
+    def calculate_surface_area_in_voxel(self,bm, x, y, z):
+
         voxel_min = Vector((
             self.bbox_min.x + x * self.voxel_size,
             self.bbox_min.y + y * self.voxel_size,
@@ -230,7 +231,6 @@ class Grid:
             self.bbox_min.z + (z + 1) * self.voxel_size
         ))
         
-        
         surface_area = 0.0
         
         for face in bm.faces:
@@ -242,7 +242,7 @@ class Grid:
                 # Ajouter l'aire de cette face (petite imprécision)
                 surface_area += face.calc_area()
         
-        bm.free()
+        
         return surface_area
 
 
@@ -293,7 +293,7 @@ def cleanUp():
 
 def main():
     cleanUp()
-    obj = get_obj("saplintree")
+    obj = get_obj("Cube")
     if(obj == None):
         print("ERROR: L'objet n'a pas été trouvé")
         exit()
