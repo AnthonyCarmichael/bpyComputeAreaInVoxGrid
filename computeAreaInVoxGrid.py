@@ -293,7 +293,7 @@ def cleanUp():
 
 def main():
     cleanUp()
-    obj = get_obj("Cube")
+    obj = get_obj("saplintree")
     if(obj == None):
         print("ERROR: L'objet n'a pas été trouvé")
         exit()
@@ -302,6 +302,8 @@ def main():
     grid.display()
     grid.draw()
     grid.cut_cube_into_voxels()
+    
+    # À optimiser, très long pour un objet complexe
     grid.compute_areas_in_grid()
     grid.display_voxs()
     
@@ -309,3 +311,7 @@ def main():
 #########################################################################  
                     
 main()
+
+# commande terminal pour lancer blender en mode background 
+# (ajouter blender dans le PATH C:\Program Files\Blender Foundation\Blender 4.3)
+# blender --background C:/Users/antho/Documents/blender/scriptVox/scriptLVoxArea.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
