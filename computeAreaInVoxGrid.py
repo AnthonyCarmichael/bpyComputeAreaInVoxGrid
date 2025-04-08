@@ -253,8 +253,38 @@ class Grid:
                     print(f"vox ({x},{y},{z}): {self.voxels[x,y,z]}")                 
                     total += self.voxels[x,y,z]
         print(f"Aire total = {total}")
-                    
-                     
+        
+    def itFaces(self):        
+        bm = bmesh.new()
+        bm.from_mesh(self.obj.data)
+        bm.transform(self.obj.matrix_world)
+        
+        min_x = self.bbox_min.x
+        min_y = self.bbox_min.y
+        min_z = self.bbox_min.z
+        
+        origin_offset = Vector((min_x, min_y, min_z))
+    
+        for face in bm.faces:
+            
+            face_center = face.calc_center_median()
+            face_center -= origin_offset
+            
+            x = math.floor(face_center.x / self.voxel_size)
+            y = math.floor(face_center.y / self.voxel_size)
+            z = math.floor(face_center.z / self.voxel_size)
+            
+            if x> self.resolution[0] -1:
+                x-=1
+            if y> self.resolution[1] -1:
+                y-=1
+            if z> self.resolution[2] -1:
+                z-=1
+                
+            self.voxels[x,y,z] += face.calc_area()
+            
+        bm.free()                      
+                        
 
 #########################################################################        
 # Fonctions    
@@ -292,7 +322,7 @@ def cleanUp():
 def main():
     time = datetime.now().time()
     cleanUp()
-    obj = get_obj("Cube")
+    obj = get_obj("saplintree")
     if(obj == None):
         print("ERROR: L'objet n'a pas été trouvé")
         exit()
@@ -303,7 +333,8 @@ def main():
     grid.cut_cube_into_voxels()
     
     # À optimiser, très long pour un objet complexe
-    grid.compute_areas_in_grid()
+    #grid.compute_areas_in_grid()
+    grid.itFaces()
     #grid.display_voxs()
     fin = datetime.now().time()
     print(f"Début: {time}\nFin: {fin}")
