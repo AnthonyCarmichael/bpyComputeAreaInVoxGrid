@@ -1,7 +1,6 @@
 import bpy
 import bmesh
 from mathutils import Vector
-from mathutils.bvhtree import BVHTree
 import math
 
 
