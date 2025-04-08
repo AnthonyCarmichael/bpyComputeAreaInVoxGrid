@@ -2,7 +2,7 @@ import bpy
 import bmesh
 from mathutils import Vector
 import math
-
+from datetime import datetime
 
 class Grid:
     def __init__(self, voxel_size ,margin,obj):
@@ -242,9 +242,7 @@ class Grid:
                 # Ajouter l'aire de cette face (petite imprécision)
                 surface_area += face.calc_area()
         
-        
         return surface_area
-
 
     def display_voxs(self):
         total = 0
@@ -292,6 +290,7 @@ def cleanUp():
     
 
 def main():
+    time = datetime.now().time()
     cleanUp()
     obj = get_obj("Cube")
     if(obj == None):
@@ -300,12 +299,14 @@ def main():
         
     grid= Grid(0.1,0,obj)
     grid.display()
-    grid.draw()
+    #grid.draw()
     grid.cut_cube_into_voxels()
     
     # À optimiser, très long pour un objet complexe
     grid.compute_areas_in_grid()
-    grid.display_voxs()
+    #grid.display_voxs()
+    fin = datetime.now().time()
+    print(f"Début: {time}\nFin: {fin}")
     
 
 #########################################################################  
