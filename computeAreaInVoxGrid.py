@@ -133,6 +133,7 @@ class Grid:
         
     def cut_cube_into_voxels(self):
         # Passer en mode objet
+        print(f"#######################################\nDébut de la coupe de la scène en voxel")
         obj = self.obj
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.select_all(action='DESELECT')
@@ -145,11 +146,15 @@ class Grid:
         bm = bmesh.new()
         bm.from_mesh(mesh)
         
+        progress =0
+        end_progress = self.resolution[0]+self.resolution[1]+self.resolution[2]
+        
         # Récupérer la matrice monde inverse
         world_matrix_inv = obj.matrix_world.inverted()
         
         # Plans de coupe sur l'axe X
         for i in range(1, self.resolution[0]):
+            print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
             pos_x = self.bbox_min.x + i * self.voxel_size
             local_co = world_matrix_inv @ Vector((pos_x, 0, 0))
             plane_no = world_matrix_inv.to_3x3() @ Vector((1, 0, 0))
@@ -162,9 +167,11 @@ class Grid:
                 clear_inner=False,
                 clear_outer=False,
             )
+            progress +=1
         
         # Plans de coupe sur l'axe Y
         for j in range(1, self.resolution[1]):
+            print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
             pos_y = self.bbox_min.y + j * self.voxel_size
             local_co = world_matrix_inv @ Vector((0, pos_y, 0))
             plane_no = world_matrix_inv.to_3x3() @ Vector((0, 1, 0))
@@ -177,9 +184,11 @@ class Grid:
                 clear_inner=False,
                 clear_outer=False,
             )
+            progress +=1
         
         # Plans de coupe sur l'axe Z
         for k in range(1, self.resolution[2]):
+            print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
             pos_z = self.bbox_min.z + k * self.voxel_size
             local_co = world_matrix_inv @ Vector((0, 0, pos_z))
             plane_no = world_matrix_inv.to_3x3() @ Vector((0, 0, 1))
@@ -192,8 +201,9 @@ class Grid:
                 clear_inner=False,
                 clear_outer=False,
             )
+            progress +=1
         
-        
+        print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
         # Appliquer les modifications
         bpy.ops.object.mode_set(mode='OBJECT')
         bm.to_mesh(mesh)
@@ -201,9 +211,8 @@ class Grid:
         mesh.update()
         
         # Mettre à jour l'affichage
-        print(f"Bisect fini")
         bpy.context.view_layer.update()
-        print(f"Update après le bisect")
+        print(f"\nFin de la coupe de la scène en voxel\n#######################################\n")
     
     def compute_areas_in_grid(self):
         bm = bmesh.new()
@@ -263,6 +272,8 @@ class Grid:
         min_y = self.bbox_min.y
         min_z = self.bbox_min.z
         
+        total = 0
+        
         origin_offset = Vector((min_x, min_y, min_z))
     
         for face in bm.faces:
@@ -282,8 +293,12 @@ class Grid:
                 z-=1
                 
             self.voxels[x,y,z] += face.calc_area()
+            total += face.calc_area()
             
-        bm.free()                      
+        bm.free()   
+        
+        # Pour tester :
+        print(f"Aire totale: {total}")                   
                         
 
 #########################################################################        
@@ -320,24 +335,26 @@ def cleanUp():
     
 
 def main():
-    time = datetime.now().time()
+    start = datetime.now()
     cleanUp()
-    obj = get_obj("saplintree")
+    obj = get_obj("Cube")
     if(obj == None):
         print("ERROR: L'objet n'a pas été trouvé")
         exit()
         
     grid= Grid(0.1,0,obj)
-    grid.display()
+
     #grid.draw()
+    
+    # Un peu long lorsqu'il y a beaucoup de voxels
     grid.cut_cube_into_voxels()
     
-    # À optimiser, très long pour un objet complexe
     #grid.compute_areas_in_grid()
     grid.itFaces()
+    grid.display()
     #grid.display_voxs()
-    fin = datetime.now().time()
-    print(f"Début: {time}\nFin: {fin}")
+    fin = datetime.now()
+    print(f"Début: {start}\nFin: {fin}\nDurée: {fin-start}")
     
 
 #########################################################################  
