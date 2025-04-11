@@ -277,15 +277,11 @@ class Grid:
             bm = bmesh.new()
             bm.from_mesh(mesh)
             
-            progress =0
-            end_progress = self.resolution[0]+self.resolution[1]+self.resolution[2]
-            
             # Récupérer la matrice monde inverse
             world_matrix_inv = obj.matrix_world.inverted()
             
             # Plans de coupe sur l'axe X
             for i in range(1, self.resolution[0]):
-                print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
                 pos_x = self.bbox_min.x + i * self.voxel_size
                 local_co = world_matrix_inv @ Vector((pos_x, 0, 0))
                 plane_no = world_matrix_inv.to_3x3() @ Vector((1, 0, 0))
@@ -298,11 +294,9 @@ class Grid:
                     clear_inner=False,
                     clear_outer=False,
                 )
-                progress +=1
             
             # Plans de coupe sur l'axe Y
             for j in range(1, self.resolution[1]):
-                print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
                 pos_y = self.bbox_min.y + j * self.voxel_size
                 local_co = world_matrix_inv @ Vector((0, pos_y, 0))
                 plane_no = world_matrix_inv.to_3x3() @ Vector((0, 1, 0))
@@ -315,11 +309,9 @@ class Grid:
                     clear_inner=False,
                     clear_outer=False,
                 )
-                progress +=1
             
             # Plans de coupe sur l'axe Z
             for k in range(1, self.resolution[2]):
-                print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
                 pos_z = self.bbox_min.z + k * self.voxel_size
                 local_co = world_matrix_inv @ Vector((0, 0, pos_z))
                 plane_no = world_matrix_inv.to_3x3() @ Vector((0, 0, 1))
@@ -332,9 +324,7 @@ class Grid:
                     clear_inner=False,
                     clear_outer=False,
                 )
-                progress +=1
             
-            print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
             # Appliquer les modifications
             bpy.ops.object.mode_set(mode='OBJECT')
             bm.to_mesh(mesh)
