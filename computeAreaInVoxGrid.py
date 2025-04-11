@@ -6,39 +6,35 @@ from datetime import datetime
 import os
 
 class Grid:
-    def __init__(self, voxel_size ,margin,obj):
-        self.obj = obj
-
-        self.voxel_size = voxel_size
-        self.voxels = {}
-        self.margin = margin
-        
-        # Récupérer les dimensions et la position de l'objet
-        bbox_corners = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
-        
-        # Trouver les points min et max
-        self.bbox_min = Vector((
-            min(corner.x for corner in bbox_corners),
-            min(corner.y for corner in bbox_corners),
-            min(corner.z for corner in bbox_corners)
-        ))
-        
-        self.bbox_max = Vector((
-            max(corner.x for corner in bbox_corners),
-            max(corner.y for corner in bbox_corners),
-            max(corner.z for corner in bbox_corners)
-        ))
-        
-            
-        if(margin>0):
-            self.bbox_min -= Vector((margin, margin, margin))
-            self.bbox_max += Vector((margin, margin, margin))
-            self.voxel_size += margin
-            
     
-        self.dimensions = self.bbox_max - self.bbox_min
+    def __init__(self, voxel_size):
+        self.objs = get_all_objs()
+        self.voxels = {}
+        self.voxel_size = voxel_size
         
+        # Déterminer la grandeur minimale de la grille en fonction des objets de la scène
+        all_corners = [obj.matrix_world @ Vector(corner) for obj in self.objs for corner in obj.bound_box]
+
+        min_x = min(corner.x for corner in all_corners)
+        min_y = min(corner.y for corner in all_corners)
+        min_z = min(corner.z for corner in all_corners)
+        
+        max_x = max(corner.x for corner in all_corners)
+        max_y = max(corner.y for corner in all_corners)
+        max_z = max(corner.z for corner in all_corners)
+
+        self.bbox_min = Vector((min_x, min_y, min_z))
+        self.bbox_max = Vector((max_x, max_y, max_z))
+
+        # Délimitation englobante de tout les objets. 
+        # Nous devons ajuster la grandeur de grille pour respecter la dimension des voxels
+        print("bbox_min:", self.bbox_min)
+        print("bbox_max:", self.bbox_max)
+        
+        
+        self.dimensions = self.bbox_max - self.bbox_min
                
+             
         # Calculer la résolution pour chaque axe
         self.resolution = (
             max(1, math.ceil(self.dimensions.x / voxel_size)),
@@ -54,6 +50,67 @@ class Grid:
             for y in range(self.resolution[1]):
                 for z in range(self.resolution[2]):
                     self.add_voxel(x, y, z, 0)
+        
+        
+        
+        
+        
+        
+        
+        
+            
+        
+        
+    
+    # Version grid pour un objet spécifique
+    # def __init__(self, voxel_size ,margin,obj):
+    #     self.obj = obj
+
+    #     self.voxel_size = voxel_size
+    #     self.voxels = {}
+    #     self.margin = margin
+        
+    #     # Récupérer les dimensions et la position de l'objet
+    #     bbox_corners = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
+        
+    #     # Trouver les points min et max
+    #     self.bbox_min = Vector((
+    #         min(corner.x for corner in bbox_corners),
+    #         min(corner.y for corner in bbox_corners),
+    #         min(corner.z for corner in bbox_corners)
+    #     ))
+        
+    #     self.bbox_max = Vector((
+    #         max(corner.x for corner in bbox_corners),
+    #         max(corner.y for corner in bbox_corners),
+    #         max(corner.z for corner in bbox_corners)
+    #     ))
+        
+            
+    #     if(margin>0):
+    #         self.bbox_min -= Vector((margin, margin, margin))
+    #         self.bbox_max += Vector((margin, margin, margin))
+    #         self.voxel_size += margin
+            
+    
+    #     self.dimensions = self.bbox_max - self.bbox_min
+        
+               
+    #     # Calculer la résolution pour chaque axe
+    #     self.resolution = (
+    #         max(1, math.ceil(self.dimensions.x / voxel_size)),
+    #         max(1, math.ceil(self.dimensions.y / voxel_size)),
+    #         max(1, math.ceil(self.dimensions.z / voxel_size)),
+    #     )
+        
+    #     self.dimx = self.resolution[0] * voxel_size
+    #     self.dimy = self.resolution[1] * voxel_size
+    #     self.dimz = self.resolution[2] * voxel_size
+        
+    #     for x in range(self.resolution[0]):
+    #         for y in range(self.resolution[1]):
+    #             for z in range(self.resolution[2]):
+    #                 self.add_voxel(x, y, z, 0)
         
 
     def add_voxel(self, x, y, z, value):
@@ -316,11 +373,10 @@ class Grid:
             for (i, j, k), area in self.voxels.items():
                 f.write(f"{i},{j},{k},{area:.6f}\n")
             # Pour debug
-            f.write(f",,,{total_area:.6f}\n")    
+            # f.write(f",,,{total_area:.6f}\n")    
             
-        f.close()               
+        f.close()    
                         
-
 #########################################################################        
 # Fonctions    
     
@@ -337,6 +393,12 @@ def get_obj(name):
         return None
     else:
         return obj
+    
+def get_all_objs():
+    if  bpy.data.objects is None:
+        print(f"Il n'y a pas d'objet dans la scène")
+        return None
+    return bpy.data.objects
     
 def cleanUp():
     # Créer une collection pour les voxels
@@ -355,33 +417,49 @@ def cleanUp():
     
 
 def main():
+    # Version un liste d'obj
+    # Setup
     start = datetime.now()
     cleanUp()
-    obj = get_obj("Cube")
-    if(obj == None):
-        print("ERROR: L'objet n'a pas été trouvé")
-        exit()
-        
-    grid= Grid(0.1,0,obj)
-
-    #grid.draw()
+    voxel_size=1
     
-    # Un peu long lorsqu'il y a beaucoup de voxels
-    grid.cut_cube_into_voxels()
-    
-    #grid.compute_areas_in_grid()
-    grid.itFaces()
+    # Création de la grille et affichage
+    grid = Grid(voxel_size)
     grid.display()
+    grid.draw()
     
-    # Exporter l'air de tous les voxels dans un fichier csv
-    grid.export_vox_areas()
-    
-    #grid.display_voxs()
     fin = datetime.now()
     print("TEMPS:")
     print(f"Début: {start}\nFin: {fin}\nDurée: {fin-start}\n")
     
+    ###################################################
+    # Version un obj spécifique
+    # start = datetime.now()
+    # cleanUp()
+    # obj = get_obj("Cube")
+    # if(obj == None):
+    #     print("ERROR: L'objet n'a pas été trouvé")
+    #     exit()
+        
+    # grid= Grid(0.1,0,obj)
 
+    # #grid.draw()
+    
+    # # Un peu long lorsqu'il y a beaucoup de voxels
+    # grid.cut_cube_into_voxels()
+    
+    # #grid.compute_areas_in_grid()
+    # grid.itFaces()
+    # grid.display()
+    
+    # # Exporter l'aire de tous les voxels dans un fichier csv
+    # grid.export_vox_areas()
+    
+    # #grid.display_voxs()
+    # fin = datetime.now()
+    # print("TEMPS:")
+    # print(f"Début: {start}\nFin: {fin}\nDurée: {fin-start}\n")
+    
 #########################################################################  
                     
 main()
@@ -389,3 +467,4 @@ main()
 # commande terminal pour lancer blender en mode background 
 # (ajouter blender dans le PATH C:\Program Files\Blender Foundation\Blender 4.3)
 # blender --background C:/Users/antho/Documents/blender/scriptVox/scriptLVoxArea.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
+# blender --background C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
