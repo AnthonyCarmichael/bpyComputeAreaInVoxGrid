@@ -51,17 +51,6 @@ class Grid:
                 for z in range(self.resolution[2]):
                     self.add_voxel(x, y, z, 0)
         
-        
-        
-        
-        
-        
-        
-        
-            
-        
-        
-    
     # Version grid pour un objet spécifique
     # def __init__(self, voxel_size ,margin,obj):
     #     self.obj = obj
