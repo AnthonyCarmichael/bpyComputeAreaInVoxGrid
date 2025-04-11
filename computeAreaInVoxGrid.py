@@ -3,6 +3,7 @@ import bmesh
 from mathutils import Vector
 import math
 from datetime import datetime
+import os
 
 class Grid:
     def __init__(self, voxel_size ,margin,obj):
@@ -66,10 +67,12 @@ class Grid:
         return self.voxels.get((x, y, z))
 
     def display(self):
+        print("RÉSULTATS:")
         print(f"Dimensions obj {self.dimensions.x:.2f} x {self.dimensions.y:.2f} x {self.dimensions.z:.2f} avec {len(self.voxels)} voxels.")
         print(f"Résolution: {self.resolution[0]} x {self.resolution[1]} x {self.resolution[2]}")
         print(f"Grosseur d'un voxel: {self.voxel_size}")
         print(f"Dimension de la grille: dimx {self.dimx}, dimy {self.dimy}, dimz {self.dimz}")
+        print(f"Aire totale: {sum(self.voxels.values())}\n")
     
     def draw(self):
         
@@ -133,7 +136,7 @@ class Grid:
         
     def cut_cube_into_voxels(self):
         # Passer en mode objet
-        print(f"#######################################\nDébut de la coupe de la scène en voxel")
+        print(f"\n#######################################\nDébut de la coupe de la scène en voxel")
         obj = self.obj
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.select_all(action='DESELECT')
@@ -272,7 +275,7 @@ class Grid:
         min_y = self.bbox_min.y
         min_z = self.bbox_min.z
         
-        total = 0
+        #total = 0
         
         origin_offset = Vector((min_x, min_y, min_z))
     
@@ -293,12 +296,29 @@ class Grid:
                 z-=1
                 
             self.voxels[x,y,z] += face.calc_area()
-            total += face.calc_area()
+            #total += face.calc_area()
             
         bm.free()   
         
         # Pour tester :
-        print(f"Aire totale: {total}")                   
+        # print(f"Aire totale: {total}")
+    
+    def export_vox_areas(self):
+        
+        total_area = sum(self.voxels.values())
+        
+        if not os.path.exists("output"):
+            os.makedirs("output")
+            
+        # Exportation des données (optionnel)
+        with open("output/surface_areas.csv", "w") as f:
+            f.write("Cell_X,Cell_Y,Cell_Z,Surface_Area\n")
+            for (i, j, k), area in self.voxels.items():
+                f.write(f"{i},{j},{k},{area:.6f}\n")
+            # Pour debug
+            f.write(f",,,{total_area:.6f}\n")    
+            
+        f.close()               
                         
 
 #########################################################################        
@@ -352,9 +372,14 @@ def main():
     #grid.compute_areas_in_grid()
     grid.itFaces()
     grid.display()
+    
+    # Exporter l'air de tous les voxels dans un fichier csv
+    grid.export_vox_areas()
+    
     #grid.display_voxs()
     fin = datetime.now()
-    print(f"Début: {start}\nFin: {fin}\nDurée: {fin-start}")
+    print("TEMPS:")
+    print(f"Début: {start}\nFin: {fin}\nDurée: {fin-start}\n")
     
 
 #########################################################################  
