@@ -1,4 +1,5 @@
 import bpy
+import sys
 import bmesh
 from mathutils import Vector
 import math
@@ -125,93 +126,13 @@ class Grid:
         grid_obj.display_type = 'WIRE'
         grid_mesh.update()
 
-        
-    def cut_cube_into_voxels(self):
-        # Passer en mode objet
-        print(f"\n#######################################\nDébut de la coupe de la scène en voxel")
-        obj = self.obj
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='DESELECT')
-        obj.select_set(True)
-        bpy.context.view_layer.objects.active = obj
-        bpy.ops.object.mode_set(mode='EDIT')
-        
-        # Accéder aux données du maillage
-        mesh = obj.data
-        bm = bmesh.new()
-        bm.from_mesh(mesh)
-        
-        progress =0
-        end_progress = self.resolution[0]+self.resolution[1]+self.resolution[2]
-        
-        # Récupérer la matrice monde inverse
-        world_matrix_inv = obj.matrix_world.inverted()
-        
-        # Plans de coupe sur l'axe X
-        for i in range(1, self.resolution[0]):
-            print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
-            pos_x = self.bbox_min.x + i * self.voxel_size
-            local_co = world_matrix_inv @ Vector((pos_x, 0, 0))
-            plane_no = world_matrix_inv.to_3x3() @ Vector((1, 0, 0))
-            
-            bmesh.ops.bisect_plane(
-                bm,
-                geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
-                plane_co=local_co,
-                plane_no=plane_no,
-                clear_inner=False,
-                clear_outer=False,
-            )
-            progress +=1
-        
-        # Plans de coupe sur l'axe Y
-        for j in range(1, self.resolution[1]):
-            print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
-            pos_y = self.bbox_min.y + j * self.voxel_size
-            local_co = world_matrix_inv @ Vector((0, pos_y, 0))
-            plane_no = world_matrix_inv.to_3x3() @ Vector((0, 1, 0))
-            
-            bmesh.ops.bisect_plane(
-                bm,
-                geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
-                plane_co=local_co,
-                plane_no=plane_no,
-                clear_inner=False,
-                clear_outer=False,
-            )
-            progress +=1
-        
-        # Plans de coupe sur l'axe Z
-        for k in range(1, self.resolution[2]):
-            print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
-            pos_z = self.bbox_min.z + k * self.voxel_size
-            local_co = world_matrix_inv @ Vector((0, 0, pos_z))
-            plane_no = world_matrix_inv.to_3x3() @ Vector((0, 0, 1))
-            
-            bmesh.ops.bisect_plane(
-                bm,
-                geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
-                plane_co=local_co,
-                plane_no=plane_no,
-                clear_inner=False,
-                clear_outer=False,
-            )
-            progress +=1
-        
-        print(f"Progression de la coupe: {round(progress/end_progress*100,2)} %")
-        # Appliquer les modifications
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bm.to_mesh(mesh)
-        bm.free()
-        mesh.update()
-        
-        # Mettre à jour l'affichage
-        bpy.context.view_layer.update()
-        print(f"\nFin de la coupe de la scène en voxel\n#######################################\n")
-        
+
     def cut_objects_into_voxels(self):
         # Passer en mode objet
-        print(f"\n#######################################\nDébut de la coupe de la scène en voxel")
+        print(f"\n#######################################\nDébut de la coupe de la scène en voxels")
+        
+        progress = 0
+        end_progress = len(self.objs) * (self.resolution[0]+self.resolution[1]+self.resolution[2])
         
         for obj in self.objs:
             #bpy.ops.object.mode_set(mode='OBJECT')
@@ -242,6 +163,8 @@ class Grid:
                     clear_inner=False,
                     clear_outer=False,
                 )
+                progress+=1
+                update_progress("Coupe la grille en voxels", progress/end_progress)
             
             # Plans de coupe sur l'axe Y
             for j in range(1, self.resolution[1]):
@@ -257,7 +180,9 @@ class Grid:
                     clear_inner=False,
                     clear_outer=False,
                 )
-            
+                progress+=1
+                update_progress("Coupe la grille en voxels", progress/end_progress)
+                
             # Plans de coupe sur l'axe Z
             for k in range(1, self.resolution[2]):
                 pos_z = self.bbox_min.z + k * self.voxel_size
@@ -272,7 +197,8 @@ class Grid:
                     clear_inner=False,
                     clear_outer=False,
                 )
-            
+                progress+=1
+                update_progress("Coupe la grille en voxels", progress/end_progress)
             # Appliquer les modifications
             bpy.ops.object.mode_set(mode='OBJECT')
             bm.to_mesh(mesh)
@@ -281,7 +207,8 @@ class Grid:
             
         # Mettre à jour l'affichage
         bpy.context.view_layer.update()
-        print(f"\nFin de la coupe de la scène en voxel\n#######################################\n")
+        update_progress("Coupe la grille en voxels", 1)
+        print(f"\nFin de la coupe de la scène en voxels\n#######################################\n")
 
     def display_voxs(self):
         total = 0
@@ -333,7 +260,8 @@ class Grid:
         with open("output/surface_areas.csv", "w") as f:
             f.write("Cell_X,Cell_Y,Cell_Z,Surface_Area\n")
             for (i, j, k), area in self.voxels.items():
-                f.write(f"{i},{j},{k},{area:.6f}\n") 
+                if area > 0:
+                    f.write(f"{i},{j},{k},{area}\n") 
             
         f.close()    
                         
@@ -375,18 +303,26 @@ def cleanUp():
     # Active la collection VoxelGrid    
     bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children["VoxelGrid"]
     
+def update_progress(job_title, progress):
+    length = 20 # modify this to change the length
+    block = int(round(length*progress))
+    msg = "\r{0}: [{1}] {2}%".format(job_title, "#"*block + "-"*(length-block), round(progress*100, 2))
+    if progress >= 1: msg += " DONE\r\n"
+    sys.stdout.write(msg)
+    sys.stdout.flush()
+
 
 def main():
     # Setup
     start = datetime.now()
     cleanUp()
-    voxel_size=1
+    voxel_size=0.1
     
     # Création de la grille et affichage
     grid = Grid(voxel_size)
     
-    # Lent lorsqu'il y a beaucoup de voxels
-    grid.draw()
+    # Lent lorsqu'il y a beaucoup de voxels plus utile pour debug avec des gros voxels
+    #grid.draw()
     
     grid.cut_objects_into_voxels()
     grid.itFaces()
@@ -405,3 +341,4 @@ main()
 # (ajouter blender dans le PATH C:\Program Files\Blender Foundation\Blender 4.3)
 # blender --background C:/Users/antho/Documents/blender/scriptVox/scriptLVoxArea.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
 # blender --background C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
+# blender --background C:/Users/antho/Documents/blender/scriptVox/m1.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
