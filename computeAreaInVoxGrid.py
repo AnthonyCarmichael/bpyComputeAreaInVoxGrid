@@ -5,6 +5,7 @@ import sys
 import math
 from datetime import datetime
 import os
+import argparse
 
 class Grid:
     def __init__(self, voxel_size, objs):
@@ -265,33 +266,82 @@ def update_progress(job_title, progress):
     sys.stdout.flush()
     
 def bisect_on_axis(vec,world_matrix_inv,bm):
-        local_co = world_matrix_inv @ vec
-        plane_no = world_matrix_inv.to_3x3() @ vec.normalized()
+    local_co = world_matrix_inv @ vec
+    plane_no = world_matrix_inv.to_3x3() @ vec.normalized()
+    
+    bmesh.ops.bisect_plane(
+        bm,
+        geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
+        plane_co=local_co,
+        plane_no=plane_no,
+        clear_inner=False,
+        clear_outer=False,
+    )
         
-        bmesh.ops.bisect_plane(
-            bm,
-            geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
-            plane_co=local_co,
-            plane_no=plane_no,
-            clear_inner=False,
-            clear_outer=False,
-        )
+class ArgumentParserForBlender(argparse.ArgumentParser):
+    """
+    This class is identical to its superclass, except for the parse_args
+    method (see docstring). It resolves the ambiguity generated when calling
+    Blender from the CLI with a python script, and both Blender and the script
+    have arguments. E.g., the following call will make Blender crash because
+    it will try to process the script's -a and -b flags:
+    >>> blender --python my_script.py -a 1 -b 2
 
+    To bypass this issue this class uses the fact that Blender will ignore all
+    arguments given after a double-dash ('--'). The approach is that all
+    arguments before '--' go to Blender, arguments after go to the script.
+    The following calls work fine:
+    >>> blender --python my_script.py -- -a 1 -b 2
+    >>> blender --python my_script.py --
+    """
 
+    def _get_argv_after_doubledash(self):
+        """
+        Given the sys.argv as a list of strings, this method returns the
+        sublist right after the '--' element (if present, otherwise returns
+        an empty list).
+        """
+        try:
+            idx = sys.argv.index("--")
+            return sys.argv[idx+1:] # the list after '--'
+        except ValueError as e: # '--' not in the list:
+            return []
+
+    # overrides superclass
+    def parse_args(self):
+        """
+        This method is expected to behave identically as in the superclass,
+        except that the sys.argv list will be pre-processed using
+        _get_argv_after_doubledash before. See the docstring of the class for
+        usage examples and details.
+        """
+        return super().parse_args(args=self._get_argv_after_doubledash())
 
 def main():
     # Setup
     start = datetime.now()
-    voxel_size=0.1
-    # Création de la grille et affichage
-    grid = Grid(voxel_size,get_all_objs())
-    # Lent lorsqu'il y a beaucoup de voxels plus utile pour debug avec des gros voxels
-    #grid.draw()
-    grid.cut_objects_into_voxels()
-    grid.itFaces()
-    grid.display() 
-    grid.export_vox_areas()
+    # Parser d'arguments
     
+    parser = ArgumentParserForBlender()
+    parser.add_argument("vox_size", help="Choose a voxel size",
+                        type=float, default=1)
+    parser.add_argument("draw_grid", help="Visualization of the grid in blender",
+                    type=bool, default=False)
+    args = parser.parse_args()
+    
+    if args.vox_size >0:
+        print(f"Argument : Vox size = {args.vox_size}")
+        voxel_size=args.vox_size
+        # Création de la grille et affichage
+        grid = Grid(voxel_size,get_all_objs())
+        # Lent lorsqu'il y a beaucoup de voxels plus utile pour debug avec des gros voxels
+        if args.draw_grid:
+            grid.draw()
+        grid.cut_objects_into_voxels()
+        grid.itFaces()
+        grid.display() 
+        grid.export_vox_areas()
+        
     fin = datetime.now()
     
     print("TEMPS:")
@@ -305,6 +355,10 @@ main()
 # blender --background C:/Users/antho/Documents/blender/scriptVox/scriptLVoxArea.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
 # blender --background C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
 # blender --background C:/Users/antho/Documents/blender/scriptVox/m1.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
+
+# Lance blender avec arguments
+# blender C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py -- 0.1
+# blender C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py -- 1 True
 
 # argparse pour invite de commande en python
 
