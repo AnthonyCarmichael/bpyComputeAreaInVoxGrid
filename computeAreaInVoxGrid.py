@@ -277,6 +277,15 @@ def bisect_on_axis(vec,world_matrix_inv,bm):
         clear_inner=False,
         clear_outer=False,
     )
+
+def delGround():
+    if "sol" in bpy.data.collections:
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.data.objects['sol'].select_set(True) 
+        bpy.ops.object.delete()   
+        bpy.ops.object.mode_set(mode='OBJECT')
+    else: 
+        print("Il n'y à pas d'objet \"sol\" à retirer")
         
 class ArgumentParserForBlender(argparse.ArgumentParser):
     """
@@ -327,12 +336,16 @@ def main():
                         type=float, default=1)
     parser.add_argument("-d","--draw_grid", help="Visualization of the grid in blender",
                         action="store_true")
+    parser.add_argument("-g","--delete_ground", help="Delete the ground from the scene",
+                    action="store_true")
     args = parser.parse_args()
     
     if args.vox_size >0:
         print(f"Argument : Vox size = {args.vox_size}")
         voxel_size=args.vox_size
         # Création de la grille et affichage
+        if args.delete_ground:
+            delGround()
         grid = Grid(voxel_size,get_all_objs())
         # Lent lorsqu'il y a beaucoup de voxels plus utile pour debug avec des gros voxels
         if args.draw_grid:
