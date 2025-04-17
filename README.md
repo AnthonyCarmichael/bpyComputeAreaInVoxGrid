@@ -40,13 +40,9 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
 3. Suivre la procédure d'installation du addon Blender2Helios : https://github.com/neumicha/Blender2Helios/wiki/Installation
 
-4. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur render.
-
-   ![image-20250417111709690](C:\Users\antho\AppData\Roaming\Typora\typora-user-images\image-20250417111709690.png)
+4. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur **Render** (à côté de *edit* sur la barre d'outil supérieur) et ensuite sur **Run Blender2Helios Export**.
 
    Il faut que les obj soit dans une collection. Ils seront placé dans un dossié portant le nom de cette collection. Dans ce cas ci "test".
-
-   ![image-20250417111854327](C:\Users\antho\AppData\Roaming\Typora\typora-user-images\image-20250417111854327.png)
 
 5. Installer conda (recommandé mamba, micromamba ou miniconda)
 
