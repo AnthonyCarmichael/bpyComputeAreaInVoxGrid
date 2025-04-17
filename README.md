@@ -1,4 +1,4 @@
-# Instruction pour l'usage du script de python pour Blender
+# Instruction pour l'usage du script python pour Blender Compute Area In Vox Grid
 
 ## Introduction
 Le script *computeAreaInVoxGrid.py* est un script python (bpy) qui permet de calculer l'aire de surface des objets dans une scène blender.
