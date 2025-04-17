@@ -325,8 +325,8 @@ def main():
     parser = ArgumentParserForBlender()
     parser.add_argument("vox_size", help="Choose a voxel size",
                         type=float, default=1)
-    parser.add_argument("draw_grid", help="Visualization of the grid in blender",
-                    type=bool, default=False)
+    parser.add_argument("-d","--draw_grid", help="Visualization of the grid in blender",
+                        action="store_true")
     args = parser.parse_args()
     
     if args.vox_size >0:

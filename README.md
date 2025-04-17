@@ -14,19 +14,61 @@ Ce script à été testé avec Blender 4.3.
 ## Utilisation
 Pour utiliser ce script, il faut avoir une scène blender (.blend) contenant des objets. Ensuite, on peut lancer le script via un terminal:
 
->blender C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py
+`blender --background C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1`
 
 On peut ajouter des flags pour blender comme:
 
->blender --background
+`blender --background`
 
-Ce flag lance le script avec blender sans l'interface graphique. C'est plus rapide et ça ne sauvegarde pas la scène donc les objets restent non altérés après l'exécution du script
+Ce flag lance le script avec blender sans l'interface graphique. C'est plus rapide et ça ne sauvegarde pas la scène donc les objets restent non altérés après l'exécution du script. Il est préférable de le garder sauf pour debug.
 
-Si on veut ajouter des arguments pour le script python il faut ajouter -- après le path du script.
+On doit ajouter des arguments pour le script python. Il faut ajouter **--** après le chemin du script python. Ensuite, on met la **grosseur des voxels** en unité blender.
 
->blender C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1 True
+`blender C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1 -d`
 
-Le premier argument (1) est la grosseur du voxel en unité blender et le deuxième est pour afficher la grille dans l'interface graphique. Afficher la grille ralentit énormément le script et est plus utile comme outil pour debug.
+Le flag **-d** est pour afficher la grille dans l'interface graphique. Afficher la grille ralentit énormément le script lorsqu'il y a beaucoup de voxels et est plus utile comme outil pour debug.
+
+## Pour utiliser blender avec Helios++
+
+Ce script a été conçu dans l'optique de comparer des données collectées d'une maquette par blender et les comparer avec l'algorithme LVox utilisant des nuages de points. C'est pourquoi, il y a cette section pour guider l'utilisateur de se script à transformer la maquette 3D en nuage de point à l'aide de Helios++
+
+### Étapes
+
+1. Télécharger Helios++ : https://github.com/3dgeo-heidelberg/helios
+
+2. Télécharger Blender2Helios : https://github.com/AnthonyCarmichael/Blender2Helios.git
+
+3. Suivre la procédure d'installation du addon Blender2Helios : https://github.com/neumicha/Blender2Helios/wiki/Installation
+
+4. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur render.
+
+   ![image-20250417111709690](C:\Users\antho\AppData\Roaming\Typora\typora-user-images\image-20250417111709690.png)
+
+   Il faut que les obj soit dans une collection. Ils seront placé dans un dossié portant le nom de cette collection. Dans ce cas ci "test".
+
+   ![image-20250417111854327](C:\Users\antho\AppData\Roaming\Typora\typora-user-images\image-20250417111854327.png)
+
+5. Installer conda (recommandé mamba, micromamba ou miniconda)
+
+6. Installer Helios++ dans un environnement python
+
+   `conda install -c conda-forge helios`
+
+7. Dans le terminal, se positionner dans le dossier de helios
+
+   `cd path/to/helios`
+
+8. Lancer la commande suivate pour obtenir un fichier las:
+
+   `helios data\surveys\blender2heliosScene.xml --lasOutput`
+
+   Si ça ne marche pas à cause du chemin pour le scanner ou la plateforme, modifier le chemin du scanner et de la plateforme du fichier *helios/data/surveys/blender2heliosScene.xml* pour ceci :
+
+   `platform="data/platforms.xml#tripod" scanner="data/scanners_tls.xml#riegl_vz400"`
+
+9. Vous devriez avoir dans *helios/output/blender2heliosScene* un nouveau dossier contenant un fichier las.
+
+
 
 *Auteurs :*
 *Anthony Carmichael sous la supervision de Félix Chabot*
