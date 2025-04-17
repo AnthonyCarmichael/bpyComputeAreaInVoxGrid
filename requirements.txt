@@ -1,2 +1,3 @@
 bpy
 fake-bpy-module
+numpy == 1.26.4
