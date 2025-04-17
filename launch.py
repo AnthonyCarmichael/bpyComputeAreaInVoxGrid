@@ -11,7 +11,7 @@ else:
 
    blend_file = "C:/Users/antho/Documents/blender/scriptVox/allScene.blend"
    script_file = "C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py"
-   arguments = ["1", "-g"]
+   arguments = ["1", "-g","-d"]
 
 
    command = [
