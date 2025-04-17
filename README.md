@@ -10,7 +10,7 @@ Ce script à été testé avec Blender 4.3.
 - Blender installé
 - Ajouter blender.exe dans la variable d'environnement PATH
 - Scène blender contenant des objets
-- Vérifier les unités de mesure pour correspondre aux unités correspondant aux besoins
+- Vérifier les unités de mesure pour correspondre a l'unité de mesure correspondant aux besoins
 ## Utilisation
 Pour utiliser ce script, il faut avoir une scène blender (.blend) contenant des objets. Ensuite, on peut lancer le script via un terminal:
 
