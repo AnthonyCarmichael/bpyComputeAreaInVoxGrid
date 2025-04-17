@@ -356,11 +356,10 @@ main()
 # blender --background C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
 # blender --background C:/Users/antho/Documents/blender/scriptVox/m1.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
 
-# Lance blender avec arguments
+# Lance blender avec arguments avec l'interface graphique
 # blender C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py -- 0.1
 # blender C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py -- 1 True
 
-# argparse pour invite de commande en python
 
 # anaconda : activate env
 # cd path helios folder
