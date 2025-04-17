@@ -1,4 +1,3 @@
 output/
 .venv
 .direnv
-launch.py
