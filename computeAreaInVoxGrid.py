@@ -27,8 +27,6 @@ class Grid:
         self.bbox_min = Vector((min_x, min_y, min_z))
         self.bbox_max = Vector((max_x, max_y, max_z))
 
-        # Délimitation englobante de tout les objets. 
-        # Nous devons ajuster la grandeur de grille pour respecter la dimension des voxels
         print("bbox_min:", self.bbox_min)
         print("bbox_max:", self.bbox_max)
         
@@ -37,6 +35,7 @@ class Grid:
         self.dimx = int(max(1, math.ceil(self.dimensions.x / voxel_size)))
         self.dimy = int(max(1, math.ceil(self.dimensions.y / voxel_size)))
         self.dimz = int(max(1, math.ceil(self.dimensions.z / voxel_size)))
+        print(f"{self.dimx},{self.dimy},{self.dimz}")
         
     def display(self):
         print("RÉSULTATS:")
@@ -107,10 +106,6 @@ class Grid:
 
     
     def cut_objects_into_voxels(self):
-                
-        # Passer en mode objet
-        print(f"\n#######################################\nDébut de la coupe de la scène en voxels")
-        
         progress = 0
         end_progress = len(self.objs) * (self.dimx+self.dimy+self.dimz)
         
@@ -118,7 +113,7 @@ class Grid:
             #bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.object.select_all(action='DESELECT')
             obj.select_set(True)
-            #bpy.context.view_layer.objects.active = obj
+            bpy.context.view_layer.objects.active = obj
             bpy.ops.object.mode_set(mode='EDIT')
             
             # Accéder aux données du maillage
@@ -126,29 +121,85 @@ class Grid:
             bm = bmesh.new()
             bm.from_mesh(mesh)
             
-            world_matrix_inv = obj.matrix_world.inverted()
+            world_matrix_inv = obj.matrix_world.inverted()            
+            #########################################################################################################################    
+            # Vielle approche, mais qui fait au final moins de doublons  
+              
+            # for i in range(1, self.dimx):
 
+            #     pos_x = self.bbox_min.x + i * self.voxel_size
+            #     local_co = world_matrix_inv @ Vector((pos_x, 0, 0))
+            #     plane_no = world_matrix_inv.to_3x3() @ Vector((1, 0, 0))
+
+            #     bmesh.ops.bisect_plane(
+            #         bm,
+            #         geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
+            #         plane_co=local_co,
+            #         plane_no=plane_no,
+            #         clear_inner=False,
+            #         clear_outer=False,
+            #     )
+
+            #     progress += 1
+
+            # # Plans de coupe sur l'axe Y
+            # for j in range(1, self.dimy):
+            #     print(f"Progression de la coupe: {round(progress/end_progress*100, 2)} %")
+
+            #     pos_y = self.bbox_min.y + j * self.voxel_size
+            #     local_co = world_matrix_inv @ Vector((0, pos_y, 0))
+            #     plane_no = world_matrix_inv.to_3x3() @ Vector((0, 1, 0))
+
+            #     bmesh.ops.bisect_plane(
+            #         bm,
+            #         geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
+            #         plane_co=local_co,
+            #         plane_no=plane_no,
+            #         clear_inner=False,
+            #         clear_outer=False,
+            #     )
+
+            #     progress += 1
+
+            # # Plans de coupe sur l'axe Z
+            # for k in range(1, self.dimz):
+            #     pos_z = self.bbox_min.z + k * self.voxel_size
+            #     local_co = world_matrix_inv @ Vector((0, 0, pos_z))
+            #     plane_no = world_matrix_inv.to_3x3() @ Vector((0, 0, 1))
+
+            #     bmesh.ops.bisect_plane(
+            #         bm,
+            #         geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
+            #         plane_co=local_co,
+            #         plane_no=plane_no,
+            #         clear_inner=False,
+            #         clear_outer=False,
+            #     )
+            ########################################################################################################
             # Plans de coupe sur l'axe X
-            for x in range(1, self.dimx):
+            for x in range( self.dimx):
                 pos_x = self.bbox_min.x + x * self.voxel_size
-                vec = Vector((pos_x, 0, 0))
-                bisect_on_axis(vec,world_matrix_inv,bm)
+                norm = Vector((1, 0, 0))
+                point = Vector((pos_x, 0, 0))
+                bisect_on_axis(point,norm,world_matrix_inv,bm)
                 progress+=1
                 update_progress("Coupe la grille en voxels", progress/end_progress)
                 
             # Plans de coupe sur l'axe Y
-            for y in range(1, self.dimy):
+            for y in range(self.dimy):
                 pos_y = self.bbox_min.y + y * self.voxel_size
-                vec = Vector((0, pos_y, 0))
-                bisect_on_axis(vec,world_matrix_inv,bm)
+                norm = Vector((0, 1, 0))
+                point = Vector((0, pos_y, 0))
+                bisect_on_axis(point,norm,world_matrix_inv,bm)
                 progress+=1
                 update_progress("Coupe la grille en voxels", progress/end_progress)
                 
             # Plans de coupe sur l'axe Z
-            for z in range(1, self.dimz):
+            for z in range(self.dimz):
                 pos_z = self.bbox_min.z + z * self.voxel_size
-                vec = Vector((0, 0, pos_z))
-                bisect_on_axis(vec,world_matrix_inv,bm)
+                norm = Vector((0, 0, 1))
+                point = Vector((0, 0, pos_z))
+                bisect_on_axis(point,norm,world_matrix_inv,bm)
                 progress+=1
                 update_progress("Coupe la grille en voxels", progress/end_progress)
                 
@@ -160,8 +211,8 @@ class Grid:
             
         # Mettre à jour l'affichage
         bpy.context.view_layer.update()
-        update_progress("Coupe la grille en voxels", 1)
-        print(f"\nFin de la coupe de la scène en voxels\n#######################################\n")
+        if progress < end_progress:
+            update_progress("Coupe la grille en voxels", 1)
 
     def display_voxs(self):
         total = 0
@@ -265,25 +316,30 @@ def update_progress(job_title, progress):
     sys.stdout.write(msg)
     sys.stdout.flush()
     
-def bisect_on_axis(vec,world_matrix_inv,bm):
-    local_co = world_matrix_inv @ vec
-    plane_no = world_matrix_inv.to_3x3() @ vec.normalized()
+def bisect_on_axis(point,normal,world_matrix_inv,bm):
+    local_co = world_matrix_inv @ point
+    local_no = world_matrix_inv.to_3x3() @ normal
     
+    # Effectuer la découpe
     bmesh.ops.bisect_plane(
         bm,
         geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
         plane_co=local_co,
-        plane_no=plane_no,
+        plane_no=local_no,
         clear_inner=False,
         clear_outer=False,
     )
 
+
+
 def delGround():
-    if "sol" in bpy.data.collections:
-        bpy.ops.object.select_all(action='DESELECT')
-        bpy.data.objects['sol'].select_set(True) 
-        bpy.ops.object.delete()   
-        bpy.ops.object.mode_set(mode='OBJECT')
+    
+    for obj in bpy.context.scene.objects:
+        if obj.name == "sol": 
+            bpy.ops.object.select_all(action='DESELECT')
+            bpy.data.objects['sol'].select_set(True) 
+            bpy.ops.object.delete()   
+            break
     else: 
         print("Il n'y à pas d'objet \"sol\" à retirer")
         
