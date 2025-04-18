@@ -39,7 +39,7 @@ class Grid:
         
     def display(self):
         print("RÉSULTATS:")
-        print(f"Dimensions obj {self.dimensions.x:.2f} x {self.dimensions.y:.2f} x {self.dimensions.z:.2f} avec {len(self.voxels)} voxels.")
+        print(f"Dimensions bbox {self.dimensions.x:.2f} x {self.dimensions.y:.2f} x {self.dimensions.z:.2f}")
         print(f"Résolution: {self.dimx} x {self.dimy} x {self.dimz}")
         print(f"Grosseur d'un voxel: {self.voxel_size}")
         print(f"Dimension de la grille: dimx {self.dimx}, dimy {self.dimy}, dimz {self.dimz}")
@@ -122,60 +122,7 @@ class Grid:
             bm.from_mesh(mesh)
             
             world_matrix_inv = obj.matrix_world.inverted()            
-            #########################################################################################################################    
-            # Vielle approche, mais qui fait au final moins de doublons  
-              
-            # for i in range(1, self.dimx):
-
-            #     pos_x = self.bbox_min.x + i * self.voxel_size
-            #     local_co = world_matrix_inv @ Vector((pos_x, 0, 0))
-            #     plane_no = world_matrix_inv.to_3x3() @ Vector((1, 0, 0))
-
-            #     bmesh.ops.bisect_plane(
-            #         bm,
-            #         geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
-            #         plane_co=local_co,
-            #         plane_no=plane_no,
-            #         clear_inner=False,
-            #         clear_outer=False,
-            #     )
-
-            #     progress += 1
-
-            # # Plans de coupe sur l'axe Y
-            # for j in range(1, self.dimy):
-            #     print(f"Progression de la coupe: {round(progress/end_progress*100, 2)} %")
-
-            #     pos_y = self.bbox_min.y + j * self.voxel_size
-            #     local_co = world_matrix_inv @ Vector((0, pos_y, 0))
-            #     plane_no = world_matrix_inv.to_3x3() @ Vector((0, 1, 0))
-
-            #     bmesh.ops.bisect_plane(
-            #         bm,
-            #         geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
-            #         plane_co=local_co,
-            #         plane_no=plane_no,
-            #         clear_inner=False,
-            #         clear_outer=False,
-            #     )
-
-            #     progress += 1
-
-            # # Plans de coupe sur l'axe Z
-            # for k in range(1, self.dimz):
-            #     pos_z = self.bbox_min.z + k * self.voxel_size
-            #     local_co = world_matrix_inv @ Vector((0, 0, pos_z))
-            #     plane_no = world_matrix_inv.to_3x3() @ Vector((0, 0, 1))
-
-            #     bmesh.ops.bisect_plane(
-            #         bm,
-            #         geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
-            #         plane_co=local_co,
-            #         plane_no=plane_no,
-            #         clear_inner=False,
-            #         clear_outer=False,
-            #     )
-            ########################################################################################################
+            
             # Plans de coupe sur l'axe X
             for x in range( self.dimx):
                 pos_x = self.bbox_min.x + x * self.voxel_size
@@ -309,7 +256,7 @@ def cleanUp():
     bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children["VoxelGrid"]
     
 def update_progress(job_title, progress):
-    length = 20 # modify this to change the length
+    length = 20 
     block = int(round(length*progress))
     msg = "\r{0}: [{1}] {2}%".format(job_title, "#"*block + "-"*(length-block), round(progress*100, 2))
     if progress >= 1: msg += " DONE\r\n"
@@ -320,7 +267,6 @@ def bisect_on_axis(point,normal,world_matrix_inv,bm):
     local_co = world_matrix_inv @ point
     local_no = world_matrix_inv.to_3x3() @ normal
     
-    # Effectuer la découpe
     bmesh.ops.bisect_plane(
         bm,
         geom=bm.verts[:] + bm.edges[:] + bm.faces[:],
@@ -329,8 +275,6 @@ def bisect_on_axis(point,normal,world_matrix_inv,bm):
         clear_inner=False,
         clear_outer=False,
     )
-
-
 
 def delGround():
     
@@ -415,21 +359,5 @@ def main():
     
     print("TEMPS:")
     print(f"Début: {start}\nFin: {fin}\nDurée: {fin-start}\n")
-    
-                    
+                      
 main()
-
-# commande terminal pour lancer blender en mode background 
-# (ajouter blender dans le PATH C:\Program Files\Blender Foundation\Blender 4.3)
-# blender --background C:/Users/antho/Documents/blender/scriptVox/scriptLVoxArea.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
-# blender --background C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
-# blender --background C:/Users/antho/Documents/blender/scriptVox/m1.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py
-
-# Lance blender avec arguments avec l'interface graphique
-# blender C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py -- 0.1
-# blender C:/Users/antho/Documents/blender/scriptVox/allScene.blend --python C:/Users/antho/Documents/blender/scriptVox/script/computeAreaInVoxGrid.py -- 1 True
-
-
-# anaconda : activate env
-# cd path helios folder
-# helios data\surveys\blender2heliosScene.xml --lasOutput
