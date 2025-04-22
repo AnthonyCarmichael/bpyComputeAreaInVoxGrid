@@ -44,11 +44,11 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
 1. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur **Render** (à côté de *edit* sur la barre d'outil supérieur) et ensuite sur **Run Blender2Helios Export**.
 
-   ![Screenshot 2025-04-17 111640](C:\Users\antho\Pictures\Screenshots\Screenshot 2025-04-17 111640.png)
+   ![screenshot](img/screenshot1.png)
 
    Il faut que les obj soit dans une collection. Ils seront placé dans un dossié portant le nom de cette collection. Dans ce cas ci "test".
 
-   ![Screenshot 2025-04-17 111815](C:\Users\antho\Pictures\Screenshots\Screenshot 2025-04-17 111815.png)
+   ![screenshot](img/screenshot2.png)
 
 2. Installer conda (recommandé mamba, micromamba ou miniconda)
 
@@ -66,9 +66,7 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
 6. Vous devriez avoir dans *helios/output/blender2heliosScene* un nouveau dossier contenant un fichier las.
 
-   
-
-   ![image-20250422101828638](C:\Users\antho\AppData\Roaming\Typora\typora-user-images\image-20250422101828638.png)
+   ![screenshot](img/screenshot3.png)
 
 
 
