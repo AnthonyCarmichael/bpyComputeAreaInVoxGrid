@@ -1,7 +1,7 @@
 # Instruction pour l'usage du script python pour Blender Compute Area In Vox Grid
 
 ## Introduction
-Le script *computeAreaInVoxGrid.py* est un script python (bpy) qui permet de calculer l'aire de surface des objets dans une scène blender.
+Le script *computeAreaInVoxGrid.py* est un script en python qui permet de calculer l'aire de surface des objets dans une scène blender.
 
 Ce script segmente la scène en coupant les faces des objets dans des voxels. La grosseur des voxels est paramétrable. Les faces contenues dans chacun des voxels sont coupées. Ceci permet de calculer facilement les faces à l'intérieur des limitations des voxels. Le cumule d'aire des faces internes dans les voxels sont comptabilisées et si l'aire est supérieure à 0, le voxel sera inscrit en sortie dans un fichier csv contenant le x, y, z du voxel et l'aire cumulée pour ce voxel spécifique.
 
@@ -46,7 +46,7 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
    ![screenshot](img/screenshot1.png)
 
-   Il faut que les obj soit dans une collection. Ils seront placé dans un dossié portant le nom de cette collection. Dans ce cas ci "test".
+   Il faut que les obj soient dans une collection. Ils seront placés dans un dossier portant le nom de cette collection. Dans ce cas-ci "test".
 
    ![screenshot](img/screenshot2.png)
 
@@ -60,7 +60,7 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
    `cd path/to/helios`
 
-5. Lancer la commande suivate pour obtenir un fichier las:
+5. Lancer la commande suivante pour obtenir un fichier las:
 
    `helios data/surveys/blender2heliosScene.xml --lasOutput`
 
