@@ -67,8 +67,3 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 6. Vous devriez avoir dans *helios/output/blender2heliosScene* un nouveau dossier contenant un fichier las.
 
    ![screenshot](img/screenshot3.png)
-
-
-
-*Auteurs :*
-*Anthony Carmichael sous la supervision de Félix Chabot*
