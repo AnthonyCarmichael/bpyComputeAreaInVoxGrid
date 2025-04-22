@@ -44,6 +44,20 @@ class Grid:
         print(f"Grosseur d'un voxel: {self.voxel_size}")
         print(f"Dimension de la grille: dimx {self.dimx}, dimy {self.dimy}, dimz {self.dimz}")
         print(f"Aire totale: {sum(self.voxels.values())}\n")
+        
+        if not os.path.exists("output"):
+            os.makedirs("output")
+            
+        # Exportation des données (optionnel)
+        with open("output/info_grid.txt", "w") as f:
+            f.write("RÉSULTATS:\n")
+            f.write(f"Dimensions bbox {self.dimensions.x:.2f} x {self.dimensions.y:.2f} x {self.dimensions.z:.2f}\n")
+            f.write(f"Résolution: {self.dimx} x {self.dimy} x {self.dimz}\n")
+            f.write(f"Grosseur d'un voxel: {self.voxel_size}\n")
+            f.write(f"Dimension de la grille: dimx {self.dimx}, dimy {self.dimy}, dimz {self.dimz}\n")
+            f.write(f"Aire totale: {sum(self.voxels.values())}")
+            
+            f.close()
     
     def draw(self):
         cleanUp()
