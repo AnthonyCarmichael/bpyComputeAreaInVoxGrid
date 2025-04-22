@@ -12,9 +12,15 @@ Ce script à été testé avec Blender 4.3.
 - Scène blender contenant des objets
 - Vérifier les unités de mesure pour correspondre a l'unité de mesure correspondant aux besoins
 ## Utilisation
-Pour utiliser ce script, il faut avoir une scène blender (.blend) contenant des objets. Ensuite, on peut lancer le script via un terminal (ou par le fichier **launch.py**) :
+Pour utiliser ce script, il faut avoir une scène blender (.blend) contenant des objets. Ensuite, on peut lancer le script via un terminal ou par le fichier **launch.py** après configuration :
 
 `blender --background C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1`
+
+Paramètre à considérer (dans le fichier launch):
+
+1. Chemin du fichier blend
+2. Arguments du script python
+3. Arguments blender
 
 On peut ajouter des flags pour blender comme:
 
