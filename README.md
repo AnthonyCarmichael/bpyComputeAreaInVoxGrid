@@ -40,29 +40,35 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
 3. Suivre la procédure d'installation du addon Blender2Helios : https://github.com/neumicha/Blender2Helios/wiki/Installation
 
-4. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur **Render** (à côté de *edit* sur la barre d'outil supérieur) et ensuite sur **Run Blender2Helios Export**.
+   *Ne pas oublier d'indiquer le path de helios dans les paramètres du addon*
+
+1. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur **Render** (à côté de *edit* sur la barre d'outil supérieur) et ensuite sur **Run Blender2Helios Export**.
+
+   ![Screenshot 2025-04-17 111640](C:\Users\antho\Pictures\Screenshots\Screenshot 2025-04-17 111640.png)
 
    Il faut que les obj soit dans une collection. Ils seront placé dans un dossié portant le nom de cette collection. Dans ce cas ci "test".
 
-5. Installer conda (recommandé mamba, micromamba ou miniconda)
+   ![Screenshot 2025-04-17 111815](C:\Users\antho\Pictures\Screenshots\Screenshot 2025-04-17 111815.png)
 
-6. Installer Helios++ dans un environnement python
+2. Installer conda (recommandé mamba, micromamba ou miniconda)
+
+3. Installer Helios++ dans un environnement python
 
    `conda install -c conda-forge helios`
 
-7. Dans le terminal, se positionner dans le dossier de helios
+4. Dans le terminal, se positionner dans le dossier de helios
 
    `cd path/to/helios`
 
-8. Lancer la commande suivate pour obtenir un fichier las:
+5. Lancer la commande suivate pour obtenir un fichier las:
 
-   `helios data\surveys\blender2heliosScene.xml --lasOutput`
+   `helios data/surveys/blender2heliosScene.xml --lasOutput`
 
-   Si ça ne marche pas à cause du chemin pour le scanner ou la plateforme, modifier le chemin du scanner et de la plateforme du fichier *helios/data/surveys/blender2heliosScene.xml* pour ceci :
+6. Vous devriez avoir dans *helios/output/blender2heliosScene* un nouveau dossier contenant un fichier las.
 
-   `platform="data/platforms.xml#tripod" scanner="data/scanners_tls.xml#riegl_vz400"`
+   
 
-9. Vous devriez avoir dans *helios/output/blender2heliosScene* un nouveau dossier contenant un fichier las.
+   ![image-20250422101828638](C:\Users\antho\AppData\Roaming\Typora\typora-user-images\image-20250422101828638.png)
 
 
 
