@@ -24,13 +24,15 @@ Ce flag lance le script avec blender sans l'interface graphique. C'est plus rapi
 
 On doit ajouter des arguments pour le script python. Il faut ajouter **--** après le chemin du script python. Ensuite, on met la **grosseur des voxels** en unité blender.
 
-`blender C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1 -d`
+`blender C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1 -d -g`
 
 Le flag **-d** est pour afficher la grille dans l'interface graphique. Afficher la grille ralentit énormément le script lorsqu'il y a beaucoup de voxels et est plus utile comme outil pour debug.
 
+Le flag **-g**  permet de retirer tout objet nommé 'sol' du calcul de l'aire pour accélérer le temps de traitement.
+
 ## Pour utiliser blender avec Helios++
 
-Ce script a été conçu dans l'optique de comparer des données collectées d'une maquette par blender et les comparer avec l'algorithme LVox utilisant des nuages de points. C'est pourquoi, il y a cette section pour guider l'utilisateur de se script à transformer la maquette 3D en nuage de point à l'aide de Helios++
+Ce script a été conçu dans l'optique de comparer des données collectées d'une maquette par blender et les comparer avec l'algorithme L-Vox utilisant des nuages de points. C'est pourquoi cette section a pour but de guider l'utilisateur de ce script à transformer la maquette 3D en nuage de point à l'aide de Helios++
 
 ### Étapes
 
@@ -40,13 +42,13 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
 3. Suivre la procédure d'installation du addon Blender2Helios : https://github.com/neumicha/Blender2Helios/wiki/Installation
 
-   *Ne pas oublier d'indiquer le path de helios dans les paramètres du addon*
+   *Ne pas oublier d'indiquer le path de helios dans les paramètres du addon.*
 
 1. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur **Render** (à côté de *edit* sur la barre d'outil supérieur) et ensuite sur **Run Blender2Helios Export**.
 
    ![screenshot](img/screenshot1.png)
 
-   Il faut que les obj soient dans une collection. Ils seront placés dans un dossier portant le nom de cette collection. Dans ce cas-ci "test".
+   Il faut que les obj soient dans une collection. Ils seront placés dans un dossier portant le nom de cette collection. Dans ce cas-ci, la collection "test" sera exportée dans helios.
 
    ![screenshot](img/screenshot2.png)
 
