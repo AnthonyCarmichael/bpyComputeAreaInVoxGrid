@@ -234,11 +234,23 @@ def get_obj(name):
     else:
         return obj
     
-def get_all_objs():
+def get_all_objs(boolDelGround):
+    
     if  bpy.data.objects is None:
         print(f"Il n'y a pas d'objet dans la scène")
         return None
-    return bpy.data.objects
+    
+    if boolDelGround == False:
+        return bpy.context.scene.objects
+    else:
+        listObj = []
+        for obj in bpy.context.scene.objects:
+            
+            if obj.name != "sol": 
+                listObj.append(obj)
+    
+
+    return listObj
     
 def cleanUp():
     # Créer une collection pour les voxels
@@ -344,9 +356,9 @@ def main():
         print(f"Argument : Vox size = {args.vox_size}")
         voxel_size=args.vox_size
         # Création de la grille et affichage
-        if args.delete_ground:
-            delGround()
-        grid = Grid(voxel_size,get_all_objs())
+        listObj = (get_all_objs(args.delete_ground))
+            
+        grid = Grid(voxel_size,listObj)
         # Lent lorsqu'il y a beaucoup de voxels plus utile pour debug avec des gros voxels
         if args.draw_grid:
             grid.draw()
