@@ -44,7 +44,7 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
 1. Télécharger Helios++ : https://github.com/3dgeo-heidelberg/helios
 
-2. Télécharger Blender2Helios : https://github.com/AnthonyCarmichael/Blender2Helios.git
+2. Télécharger Blender2Helios : https://github.com/neumicha/Blender2Helios.git
 
 3. Suivre la procédure d'installation du addon Blender2Helios : https://github.com/neumicha/Blender2Helios/wiki/Installation
 
