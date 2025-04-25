@@ -26,7 +26,9 @@ Paramètre à considérer (dans le fichier launch):
 
 On peut ajouter des flags pour blender comme:
 
-`blender --background`
+```
+blender --background
+```
 
 Ce flag lance le script avec blender sans l'interface graphique. C'est plus rapide et ça ne sauvegarde pas la scène donc les objets restent non altérés après l'exécution du script. Il est préférable de le garder sauf pour debug.
 
