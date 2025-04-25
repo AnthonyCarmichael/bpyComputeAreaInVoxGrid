@@ -72,6 +72,12 @@ conda install -c conda-forge helios
       ![screenshot](img/screenshot4.png)
 
    2. Dans le menu preferences, cliquer sur **Get Extensions** et à droite de la fenêtre, sur la **flèche** pour ouvrir les options d'installation du addon. Ensuite cliquer sur **Install from Disk** et sélectionner blender2helios.py du dépôt cloné précédament.
+      ![screenshot](img/screenshot5.png)
+   
+   3. Ensuite, cliquer sur **Add-ons** et trouver Helios2Blender pour l'activer et le paramètrer. Il faut indiquer le chemin vers le dossier de Helios++ cloné préalablement.
+      ![screenshot](img/screenshot6.png)
+   
+      
    
 4. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur **Render** (à côté de *edit* sur la barre d'outil supérieur) et ensuite sur **Run Blender2Helios Export**.
 
