@@ -254,16 +254,17 @@ def get_all_objs(boolDelGround):
         print(f"Il n'y a pas d'objet dans la scène")
         return None
     
+    listObj = []
+    
     if boolDelGround == False:
-        return bpy.context.scene.objects
-    else:
-        listObj = []
         for obj in bpy.context.scene.objects:
-            
-            if obj.name != "sol": 
+            if obj.type == 'MESH': 
+                listObj.append(obj)
+    else:
+        for obj in bpy.context.scene.objects:
+            if obj.name != "sol" and obj.type == 'MESH': 
                 listObj.append(obj)
     
-
     return listObj
     
 def cleanUp():
