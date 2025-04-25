@@ -14,7 +14,9 @@ Ce script à été testé avec Blender 4.3.
 ## Utilisation
 Pour utiliser ce script, il faut avoir une scène blender (.blend) contenant des objets. Ensuite, on peut lancer le script via un terminal ou par le fichier **launch.py** après configuration :
 
-`blender --background C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1`
+```
+blender --background C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1 
+```
 
 Paramètre à considérer (dans le fichier launch):
 
@@ -30,7 +32,9 @@ Ce flag lance le script avec blender sans l'interface graphique. C'est plus rapi
 
 On doit ajouter des arguments pour le script python. Il faut ajouter **--** après le chemin du script python. Ensuite, on met la **grosseur des voxels** en unité blender.
 
-`blender C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1 -d -g`
+```
+blender C:/path/to/sceneBlender.blend --python C:/path/to/computeAreaInVoxGrid.py -- 1 -d -g
+```
 
 Le flag **-d** est pour afficher la grille dans l'interface graphique. Afficher la grille ralentit énormément le script lorsqu'il y a beaucoup de voxels et est plus utile comme outil pour debug.
 
@@ -51,7 +55,10 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
    2. Créer un environnement conda avec [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html), [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html) ou [miniconda](https://www.anaconda.com/docs/main) (testé avec miniconda)
 
    3. Ligne pour installer helios dans l'environnement conda activé:
-      ``` conda install -c conda-forge helios```
+      
+``` 
+conda install -c conda-forge helios
+```
 
 2. Cloner le dépôt de Blender2Helios : https://github.com/neumicha/Blender2Helios.git
 
@@ -76,7 +83,9 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
 6. Lancer la commande suivante pour obtenir un fichier las:
 
-   `helios data/surveys/blender2heliosScene.xml --lasOutput`
+```
+helios data/surveys/blender2heliosScene.xml --lasOutput
+```
 
 7. Vous devriez avoir dans *helios/output/blender2heliosScene* un nouveau dossier contenant un fichier las.
 
