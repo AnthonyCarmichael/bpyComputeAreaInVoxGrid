@@ -38,19 +38,33 @@ Le flag **-g**  permet de retirer tout objet nommé 'sol' du calcul de l'aire po
 
 ## Pour utiliser blender avec Helios++
 
-Ce script a été conçu dans l'optique de comparer des données collectées d'une maquette par blender et les comparer avec l'algorithme L-Vox utilisant des nuages de points. C'est pourquoi cette section a pour but de guider l'utilisateur de ce script à transformer la maquette 3D en nuage de point à l'aide de Helios++
+Ce script a été conçu dans l'optique de comparer des données collectées d'une maquette dans blender avec la sortie de l'algorithme L-Vox utilisant des nuages de points. C'est pourquoi cette section a pour but de guider l'utilisateur de ce script à transformer la maquette 3D en nuage de point à l'aide de Helios++
 
 ### Étapes
 
 1. Télécharger Helios++ : https://github.com/3dgeo-heidelberg/helios
 
-2. Télécharger Blender2Helios : https://github.com/neumicha/Blender2Helios.git
+   Pour reproduire exactement la même installation:
 
-3. Suivre la procédure d'installation du addon Blender2Helios : https://github.com/neumicha/Blender2Helios/wiki/Installation
+   1. Cloner le dépôt github de Helios++
 
-   *Ne pas oublier d'indiquer le path de helios dans les paramètres du addon.*
+   2. Créer un environnement conda avec [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html), [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html) ou [miniconda](https://www.anaconda.com/docs/main) (testé avec miniconda)
 
-1. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur **Render** (à côté de *edit* sur la barre d'outil supérieur) et ensuite sur **Run Blender2Helios Export**.
+   3. Ligne pour installer helios dans l'environnement conda activé:
+      ``` conda install -c conda-forge helios```
+
+2. Cloner le dépôt de Blender2Helios : https://github.com/neumicha/Blender2Helios.git
+
+3. Installer le addon Blender2Helios dans blender
+   (documentation https://github.com/neumicha/Blender2Helios/wiki/Installation)
+
+   1. Cliquer sur edit et préférences 
+      ![screenshot](img/screenshot4.png)
+   2. Dans le menu preferences, cliquer sur **Get Extensions** et à droite de la fenêtre, sur la **flèche** pour ouvrir les options d'installation du addon. Ensuite cliquer sur **Install from Disk** et sélectionner blender2helios.py du dépôt cloné précédament.
+
+4. Une fois que le addon est ajouté dans blender via l'installation par le disque, ouvrir la scène que l'on veut exporter et cliquer sur **Render** (à côté de *edit* sur la barre d'outil supérieur) et ensuite sur **Run Blender2Helios Export**.
+
+   Ceci exportera la scène blend en fichier xml dans le dossier **data** du dossier de helios++
 
    ![screenshot](img/screenshot1.png)
 
@@ -58,20 +72,12 @@ Ce script a été conçu dans l'optique de comparer des données collectées d'u
 
    ![screenshot](img/screenshot2.png)
 
-2. Installer conda (recommandé mamba, micromamba ou miniconda)
+5. Dans un terminal avec l'environnement conda activé se positionner dans le dossier de helios++
 
-3. Installer Helios++ dans un environnement python
-
-   `conda install -c conda-forge helios`
-
-4. Dans le terminal, se positionner dans le dossier de helios
-
-   `cd path/to/helios`
-
-5. Lancer la commande suivante pour obtenir un fichier las:
+6. Lancer la commande suivante pour obtenir un fichier las:
 
    `helios data/surveys/blender2heliosScene.xml --lasOutput`
 
-6. Vous devriez avoir dans *helios/output/blender2heliosScene* un nouveau dossier contenant un fichier las.
+7. Vous devriez avoir dans *helios/output/blender2heliosScene* un nouveau dossier contenant un fichier las.
 
    ![screenshot](img/screenshot3.png)
